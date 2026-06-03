@@ -43,7 +43,9 @@ boutique-queijo/
 ```
 ## 3. Guia de Utilização por módulo
 
-Lorem ipsum orem ipsum lorem ipsum lorem ipsum
+O coração estatístico do sistema. Ele é atualizado instantaneamente a cada venda ou compra inserida nos outros módulos.
+* **KPI's Centrais:** Exibe os cartões com faturamento total em reais (R$), custo total de compras, lucro bruto estimado e volume de produtos cadastrados.
+* **Fluxo de Trabalho:** Monitore os cartões no topo assim que abrir a aplicação para entender a saúde financeira atual do seu negócio antes de tomar decisões de compras.
 
 ## 4. Gestão de Validades e Alertas Inteligentes
 

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boutique do Queijo — Sistema de Gestão</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    
+  </style>
+</head>
+
+<body>
+
+  <!-- TELA DE BLOQUEIO -->
+  <div id="bloqueio">
+    <div class="blk-card">
+      <div class="blk-logo">B</div>
+      <div class="blk-badge" id="blkBadge">Período de teste encerrado</div>
+      <h2>Acesso suspenso</h2>
+      <p>Seu período gratuito de <strong>30 dias</strong> chegou ao fim.<br>
+        Para continuar usando o sistema e não perder seus dados, entre em contato para assinar o plano mensal.</p>
+      <hr class="blk-divider">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">
+        <strong style="color:var(--text)">Plano mensal</strong><br>
+        Acesso completo + suporte + backups
+      </p>
+      <a id="btnContato" href="#" class="btn-contato">&#128241; Falar com o suporte</a>
+      <p class="blk-trial">Seus dados estão salvos e serão restaurados após a assinatura.</p>
+    </div>
+  </div>
+
+  <!-- BANNER DE TRIAL -->
+  <div id="trialBanner">
+    <span>&#9203; Período de teste gratuito</span>
+    <span class="tb-dias" id="trialDiasTexto"></span>
+    <span style="font-size:11px;opacity:.8">Após o vencimento, entre em contato para continuar.</span>
+  </div>
+
+  <!-- HEADER -->
+  <div class="hd">
+    <div class="hd-left">
+      <div class="logo">B</div>
+      <div>
+        <h1>Boutique do Queijo</h1>
+        <div class="hd-sub">Sistema de gestão integrado</div>
+      </div>
+    </div>
+    <div class="hd-btns">
+      <button class="btn-hd" onclick="exportCSV()">&#8595; Exportar CSV</button>
+      <button class="btn-hd save" onclick="salvarArquivo()">&#128190; Salvar arquivo</button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="ntab active" onclick="showPage('dash',this)">&#9685; Dashboard</button>
+    <button class="ntab" onclick="showPage('produtos',this)">&#127828; Produtos</button>
+    <button class="ntab" onclick="showPage('vendas',this)">&#128722; Vendas</button>
+    <button class="ntab" onclick="showPage('estoque',this)">&#128230; Estoque</button>
+    <button class="ntab" onclick="showPage('compras',this)">&#128666; Compras</button>
+  </nav>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div id="dash" class="page active">
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="charts-row">
+        <div class="card">
+          <div class="ctitle"><span class="cicon">&#9685;</span> Categoria por faturamento</div>
+          <div class="legend" id="legCat"></div>
+          <div style="position:relative;height:185px"><canvas id="catChart" role="img"
+              aria-label="Faturamento por categoria"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="ctitle"><span class="cicon">&#128179;</span> Forma de pagamento</div>
+          <div class="legend" id="legPgto"></div>
+          <div style="position:relative;height:185px"><canvas id="pgtoChart" role="img" aria-label="Pagamento"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ctitle"><span class="cicon">&#9660;</span> Produtos mais vendidos (R$)</div>
+        <div id="prodWrap" style="position:relative;height:240px"><canvas id="prodChart" role="img"
+            aria-label="Ranking de produtos"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="ctitle"><span class="cicon">&#9888;</span> Alertas de validade</div>
+        <div id="alertasDiv"></div>
+      </div>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div id="produtos" class="page">
+      <div class="card">
+        <div class="ctitle"><span class="cicon">+</span> Cadastrar produto</div>
+        <div class="form-grid">
+          <div class="fg" style="grid-column:span 2"><label>Nome do produto</label><input type="text" id="pNome"
+              placeholder="Ex: Queijo Gouda Holandês"></div>
+          <div class="fg"><label>Categoria</label>
+            <select id="pCat">
+              <option>Queijos</option>
+              <option>Embutidos</option>
+              <option>Acompanhamentos</option>
+              <option>Outros</option>
+            </select>
+          </div>
+          <div class="fg"><label>Unidade de medida</label>
+            <select id="pUnid" onchange="atualizarLabelPreco()">
+              <option value="kg">kg — por quilograma</option>
+              <option value="g">g — por grama</option>
+              <option value="un">un — por unidade</option>
+              <option value="L">L — por litro</option>
+              <option value="ml">ml — por mililitro</option>
+              <option value="cx">cx — por caixa</option>
+              <option value="pct">pct — por pacote</option>
+              <option value="fatia">fatia</option>
+            </select>
+          </div>
+          <div class="fg"><label id="labelPreco">Preço por kg (R$)</label><input type="number" id="pPreco" step="0.01"
+              placeholder="0,00"></div>
+          <div class="fg"><label>Código / referência (opcional)</label><input type="text" id="pCod"
+              placeholder="Ex: QJ-001"></div>
+          <div class="fg"><label>Observação (opcional)</label><input type="text" id="pObs"
+              placeholder="Ex: importado, artesanal..."></div>
+        </div>
+        <button class="btn btn-p" onclick="addProduto()">&#10003; Cadastrar produto</button>
+      </div>
+      <div class="card">
+        <div class="tb-bar">
+          <span class="tb-count" id="prodCount">0 produtos</span>
+          <button class="btn btn-sm btn-d" onclick="clearAll('produtos')">&#128465; Limpar tudo</button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30px">#</th>
+                <th>Nome</th>
+                <th style="width:110px">Categoria</th>
+                <th style="width:80px">Unidade</th>
+                <th style="width:120px">Preço unit.</th>
+                <th style="width:75px">Código</th>
+                <th style="width:70px"></th>
+              </tr>
+            </thead>
+            <tbody id="produtosBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- VENDAS -->
+    <div id="vendas" class="page">
+      <div class="card">
+        <div class="ctitle"><span class="cicon">+</span> Registrar venda</div>
+        <div class="form-grid">
+          <div class="fg"><label>Data</label><input type="date" id="vData"></div>
+          <div class="fg"><label>Produto</label>
+            <select id="vProdSel" onchange="preencherVenda()">
+              <option value="">— selecione —</option>
+            </select>
+          </div>
+          <div class="fg"><label>Categoria</label><input type="text" id="vCat" readonly placeholder="automático"></div>
+          <div class="fg"><label id="vQtdLbl">Quantidade (kg)</label>
+            <input type="number" id="vQtd" min="0.001" step="0.001" placeholder="0,000">
+          </div>
+          <div class="fg"><label id="vPrecoLbl">Preço por kg (R$)</label>
+            <input type="number" id="vPreco" step="0.01" placeholder="0,00">
+          </div>
+          <div class="fg"><label>Total (R$)</label><input type="text" id="vTotal" readonly placeholder="calculado">
+          </div>
+          <div class="fg"><label>Forma de pagamento</label>
+            <select id="vPgto">
+              <option>Cartão Débito</option>
+              <option>Cartão Crédito</option>
+              <option>PIX</option>
+              <option>Dinheiro</option>
+            </select>
+          </div>
+          <div class="fg"><label>Observação</label><input type="text" id="vObs" placeholder="opcional"></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button class="btn btn-p" onclick="addVenda()">&#10003; Registrar venda</button>
+          <span id="vMsg" style="font-size:12px;color:var(--green);font-weight:500"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tb-bar">
+          <span class="tb-count" id="vendaCount">0 registros</span>
+          <button class="btn btn-sm btn-d" onclick="clearAll('vendas')">&#128465; Limpar</button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:88px">Data</th>
+                <th>Produto</th>
+                <th style="width:90px">Categoria</th>
+                <th style="width:95px">Qtd</th>
+                <th style="width:100px">Preço unit.</th>
+                <th style="width:90px">Total</th>
+                <th style="width:110px">Pagamento</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="vendasBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTOQUE -->
+    <div id="estoque" class="page">
+      <div class="card">
+        <div class="ctitle"><span class="cicon">+</span> Atualizar estoque</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:13px">Selecione um produto cadastrado e informe a
+          quantidade atual em estoque e a data de validade do lote.</p>
+        <div class="form-grid">
+          <div class="fg" style="grid-column:span 2"><label>Produto</label>
+            <select id="eProdSel" onchange="preencherEstoque()">
+              <option value="">— selecione —</option>
+            </select>
+          </div>
+          <div class="fg"><label>Categoria</label><input type="text" id="eCat" readonly placeholder="automático"></div>
+          <div class="fg"><label id="eEstLbl">Qtd em estoque (kg)</label><input type="number" id="eEst" min="0"
+              step="0.001" value="0"></div>
+          <div class="fg"><label>Data de validade</label><input type="date" id="eVal"></div>
+          <div class="fg"><label>Lote (opcional)</label><input type="text" id="eLote" placeholder="Ex: L2025-04"></div>
+        </div>
+        <button class="btn btn-p" onclick="addEstoque()">&#10003; Salvar no estoque</button>
+      </div>
+      <div class="card">
+        <div class="tb-bar">
+          <span class="tb-count" id="estoqueCount">0 itens</span>
+          <button class="btn btn-sm btn-d" onclick="clearAll('estoque')">&#128465; Limpar</button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th style="width:100px">Categoria</th>
+                <th style="width:110px">Estoque</th>
+                <th style="width:100px">Validade</th>
+                <th style="width:55px">Dias</th>
+                <th style="width:82px">Status</th>
+                <th style="width:65px">Lote</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="estoqueBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPRAS -->
+    <div id="compras" class="page">
+      <div class="card">
+        <div class="ctitle"><span class="cicon">+</span> Registrar compra</div>
+        <div class="form-grid">
+          <div class="fg"><label>Data</label><input type="date" id="cData"></div>
+          <div class="fg"><label>Fornecedor</label><input type="text" id="cForn" placeholder="Ex: Laticínios São João">
+          </div>
+          <div class="fg"><label>Produto (cadastrado)</label>
+            <select id="cProdSel" onchange="preencherCompra()">
+              <option value="">— selecione ou —</option>
+            </select>
+          </div>
+          <div class="fg"><label>Produto (digitado)</label><input type="text" id="cProd"
+              placeholder="Se não cadastrado"></div>
+          <div class="fg"><label id="cQtdLbl">Quantidade (kg)</label><input type="number" id="cQtd" min="0.001"
+              step="0.001" value="1"></div>
+          <div class="fg"><label>Custo total (R$)</label><input type="number" id="cTotal" step="0.01"
+              placeholder="0,00"></div>
+          <div class="fg"><label>Nota fiscal (opcional)</label><input type="text" id="cNF" placeholder="Ex: NF-0012345">
+          </div>
+        </div>
+        <button class="btn btn-p" onclick="addCompra()">&#10003; Registrar compra</button>
+      </div>
+      <div class="card">
+        <div class="tb-bar">
+          <span class="tb-count" id="compraCount">0 registros</span>
+          <button class="btn btn-sm btn-d" onclick="clearAll('compras')">&#128465; Limpar</button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:88px">Data</th>
+                <th>Fornecedor</th>
+                <th>Produto</th>
+                <th style="width:95px">Quantidade</th>
+                <th style="width:90px">Total</th>
+                <th style="width:85px">NF</th>
+                <th style="width:40px"></th>
+              </tr>
+            </thead>
+            <tbody id="comprasBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- MODAL EDITAR PRODUTO -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <h3>Editar produto</h3>
+      <div class="form-grid">
+        <div class="fg" style="grid-column:span 2"><label>Nome</label><input type="text" id="mNome"></div>
+        <div class="fg"><label>Categoria</label>
+          <select id="mCat">
+            <option>Queijos</option>
+            <option>Embutidos</option>
+            <option>Acompanhamentos</option>
+            <option>Outros</option>
+          </select>
+        </div>
+        <div class="fg"><label>Unidade</label>
+          <select id="mUnid">
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="un">un</option>
+            <option value="L">L</option>
+            <option value="ml">ml</option>
+            <option value="cx">cx</option>
+            <option value="pct">pct</option>
+            <option value="fatia">fatia</option>
+          </select>
+        </div>
+        <div class="fg"><label>Preço unit. (R$)</label><input type="number" id="mPreco" step="0.01"></div>
+        <div class="fg"><label>Código</label><input type="text" id="mCod"></div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-p" onclick="salvarEdicao()">&#10003; Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sn" id="sn">Arquivo salvo!</div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

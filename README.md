@@ -1,68 +1,64 @@
-﻿# 🧀 Boutique do Queijo — Sistema de Gestão Integrado
+﻿# 🧀 Boutique do Queijo · Sistema de Gestão
 
-Bem-vindo ao repositório oficial da **Boutique do Queijo**, um sistema de gestão ERP em tela única (SPA) de alta performance, desenvolvido especificamente para estabelecimentos comerciais de frios, laticínios, embutidos e acompanhamentos finos.
+Sistema web de gestão para uma loja de frios e laticínios, desenvolvido como **projeto freelance**. Centraliza produtos, vendas, estoque, validades e compras em uma única tela, com dashboard de indicadores.
 
-Este sistema centraliza o controle operacional de **Produtos, Vendas, Estoque, Validades, Compras** e extrai indicadores de inteligência analítica (*Business Intelligence*) por meio de dashboards visuais interativos.
+## Para que serve
 
----
+Pequenos comércios costumam controlar vendas e validades em cadernos ou planilhas soltas. O sistema substitui isso por uma ferramenta simples, que roda no navegador e não precisa de servidor, banco de dados nem instalação.
 
-## 📌 Sumário
-1. [Arquitetura e Recursos do Sistema](#1-arquitetura-e-recursos-do-sistema)
-2. [Interface e Estrutura de Arquivos](#2-interface-e-estrutura-de-arquivos)
-3. [Guia de Utilização por Módulo](#3-guia-de-utilização-por-módulo)
-4. [Gestão de Validades e Alertas Inteligentes](#4-gestão-de-validades-e-alertas-inteligentes)
-5. [Análise de BI e Dashboards](#5-análise-de-bi-e-dashboards)
-6. [Persistência, Exportação e Salvamento de Dados](#6-persistência-exportação-e-salvamento-de-dados)
-7. [Como Executar a Aplicação](#7-como-executar-a-aplicação)
-8. [Configuração do Período de Teste (Trial Mode)](#8-configuração-do-período-de-teste-trial-mode)
+## Funcionalidades
 
----
+| Módulo | O que faz |
+|---|---|
+| **Dashboard** | Quantidade de vendas, faturamento, ticket médio, total em compras e margem bruta; gráficos de vendas por categoria, por forma de pagamento e por produto |
+| **Produtos** | Cadastro com categoria, unidade (kg, g, unidade, litro, caixa…), preço e código; edição e exclusão |
+| **Vendas** | Registro de vendas com cálculo automático do total e forma de pagamento (PIX, débito, crédito, dinheiro) |
+| **Estoque e validades** | Controle de quantidade, lote e validade, com alertas: **Vencido**, **Urgente** (até 7 dias), **Atenção** (até 30 dias) e **Ok** |
+| **Compras** | Registro de compras por fornecedor, com número da nota fiscal |
+| **Exportação** | Exporta todos os dados em CSV, para abrir no Excel ou Power BI |
 
-## 1. Arquitetura e Recursos do Sistema
+## Como executar
 
-A aplicação adota o conceito de **Single Page Application (SPA)** puramente *client-side*, eliminando a dependência de servidores pesados ou bancos de dados externos na máquina do usuário.
+Não precisa instalar nada.
 
-### 🚀 Principais Tecnologias Implementadas:
-* **HTML5 Semântico:** Estruturação otimizada para renderização ágil e acessibilidade.
-* **CSS3 Avançado (Variáveis de Escopo Dinâmico):** Paleta de cores moderna inspirada no universo de queijos finos e charcutaria (tons terrosos, dourados e mates), com layout responsivo e transições suaves.
-* **JavaScript Moderno (ES6+):** Motor operacional responsável pela computação dos dados, gerenciamento de estados em memória, persistência local e manipulação do DOM.
-* **Chart.js (v4.4.1):** Biblioteca integrada via CDN para plotagem de gráficos dinâmicos de faturamento, vendas e fatias de mercado.
+1. Baixe o projeto: botão verde **Code → Download ZIP** (ou `git clone https://github.com/waldineilameira-lab/boutique-queijo.git`).
+2. Abra o arquivo `src/index.html` no navegador (Chrome, Edge ou Firefox).
 
----
+No VSCode, também dá para usar a extensão **Live Server**: clique com o botão direito em `src/index.html` → **Open with Live Server**.
 
-## 2. Interface e Estrutura de Arquivos
+## Como os dados são salvos
 
-Para manter o sistema leve e de fácil manutenção, a aplicação é dividida em três arquivos fundamentais:
+Os dados ficam embutidos no próprio arquivo HTML:
 
-```text
-boutique-queijo/
-|---src/
-    ├── index.html   # Estrutura visual, formulários e esqueleto dos módulos
-    ├── style.css    # Design, tipografia, grid estrutural e responsividade
-    └── script.js    # Lógica de negócio, cálculos, gráficos e persistência
+- **💾 Salvar arquivo** baixa uma cópia do sistema (`boutique_queijo.html`) com todos os dados registrados. Na próxima vez, abra esse arquivo.
+- **↓ Exportar CSV** gera uma planilha com produtos, vendas, estoque e compras.
+
+## Período de teste
+
+O sistema tem um período de teste configurável. Ao terminar, a tela é bloqueada e mostra um botão de contato por WhatsApp. Para ajustar, edite o bloco `CFG` no início de `src/script.js`:
+
+```js
+var CFG = {
+  trialDias: 30,            // duração do teste, em dias
+  whatsapp: '55DDNUMERO',   // número de contato (DDI + DDD + número)
+  mensagemWpp: '...',       // mensagem pré-preenchida
+  nomeCliente: '...'        // nome exibido na tela de bloqueio
+};
 ```
-## 3. Guia de Utilização por módulo
 
-O coração estatístico do sistema. Ele é atualizado instantaneamente a cada venda ou compra inserida nos outros módulos.
-* **KPI's Centrais:** Exibe os cartões com faturamento total em reais (R$), custo total de compras, lucro bruto estimado e volume de produtos cadastrados.
-* **Fluxo de Trabalho:** Monitore os cartões no topo assim que abrir a aplicação para entender a saúde financeira atual do seu negócio antes de tomar decisões de compras.
+## Estrutura
 
-## 4. Gestão de Validades e Alertas Inteligentes
+```
+src/
+├── index.html   # telas e formulários
+├── style.css    # visual e responsividade
+└── script.js    # regras de negócio, gráficos, exportação e período de teste
+```
 
-Lorem ipsum orem ipsum lorem ipsum lorem ipsum
+## Tecnologias
 
-## 5. Análise de BI e Dashboards
+HTML5 · CSS3 · JavaScript (ES6) · [Chart.js 4](https://www.chartjs.org/)
 
-Lorem ipsum orem ipsum lorem ipsum lorem ipsum
+## Autor
 
-## 6. Persistência, Exportação e Salvamento de Dados
-
-Lorem ipsum orem ipsum lorem ipsum lorem ipsum
-
-## 7. Como Executar a Aplicação
-
-Lorem ipsum orem ipsum lorem ipsum lorem ipsum
-
-## 8. Configuração do Período de Teste
-
-Lorem ipsum orem ipsum lorem ipsum lorem ipsum
+**Waldinei Lameira** · [LinkedIn](https://www.linkedin.com/in/waldineilameira) · [GitHub](https://github.com/waldineilameira-lab)
